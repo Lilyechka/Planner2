@@ -1,9 +1,7 @@
 package com.liliia.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "tasks")
@@ -11,44 +9,45 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_task")
-    private Long id;
+    private Long id_task;
 
-    @Column(name = "id_user")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 
-    @Column(name = "topic")
+    @Column(nullable = false)
     private String topic;
 
-    @Column(name = "description_task")
-    private String description;
+    @Column(nullable = false)
+    private LocalDateTime date_of_creation;
 
-    @Column(name = "date_of_creation", nullable = false, updatable = false)
-    private LocalDateTime dateOfCreation;
-
-    @Column(name = "deadline")
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
+    @Column(nullable = false, length = 10000)
+    private String description_task;
 
     @PrePersist
     protected void onCreate() {
-        dateOfCreation = LocalDateTime.now();
+        date_of_creation = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
+    // Getters and Setters
+
+    public Long getIdTask() {
+        return id_task;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdTask(Long idTask) {
+        this.id_task = idTask;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTopic() {
@@ -60,11 +59,11 @@ public class Task {
     }
 
     public LocalDateTime getDateOfCreation() {
-        return dateOfCreation;
+        return date_of_creation;
     }
 
     public void setDateOfCreation(LocalDateTime dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
+        this.date_of_creation = dateOfCreation;
     }
 
     public LocalDateTime getDeadline() {
@@ -76,23 +75,11 @@ public class Task {
     }
 
     public String getDescription() {
-        return description;
+        return description_task;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String descriptionTask) {
+        this.description_task = descriptionTask;
     }
 
-    public void setTitle(String title) { this.topic = title;
-    }
-
-    public void setStatus(String status) { this.description = status;
-    }
-
-    public String getTitle() { return this.topic;
-    }
-
-    public String getStatus() { return this.description;
-    }
 }
-

@@ -13,23 +13,22 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> getTasksByUserId(Long id_user) {
+        return taskRepository.findByUserId(Math.toIntExact(id_user));
     }
 
-    public Task getTaskById(Long taskId) {
-        return taskRepository.findById(Math.toIntExact(taskId)).orElse(null);
+    public void createTask(Task task) {
+        taskRepository.save(task);
     }
 
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
-    }
-
-    public Task updateTask(Task task) {
-        return taskRepository.save(task);
+    public void updateTask(Long taskId, Task task) {
+        Task existingTask = taskRepository.findById(id_task).orElseThrow(() -> new RuntimeException("Task not found"));
+        existingTask.setTopic(task.getTopic());
+        existingTask.setDescription(task.getDescription());
+        taskRepository.save(existingTask);
     }
 
     public void deleteTask(Long taskId) {
-        taskRepository.deleteById(Math.toIntExact(taskId));
+        taskRepository.deleteById(id_task);
     }
 }
