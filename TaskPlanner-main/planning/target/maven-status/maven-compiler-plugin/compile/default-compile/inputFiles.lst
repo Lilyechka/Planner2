@@ -1,0 +1,10 @@
+/home/developer/Downloads/planning/src/main/java/com/liliia/Controllers/TaskController.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/Controllers/UserController.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/PlanningApplication.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/Repository/TaskRepository.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/Repository/UserRepository.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/SecurityConfig.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/model/Task.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/model/User.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/service/TaskService.java
+/home/developer/Downloads/planning/src/main/java/com/liliia/service/UserService.java
