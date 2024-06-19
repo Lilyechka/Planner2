@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 @Service
 public class UserService implements UserDetailsService {
 
@@ -28,9 +27,15 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole())
+                .build();
     }
+
 
     public User registerNewUserAccount(DTORegister userDto) {
         if (usernameExists(userDto.getUsername())) {
@@ -60,7 +65,7 @@ public class UserService implements UserDetailsService {
     }
 
     private DTOUser convertToDTO(User user) {
-        return new DTOUser(user.getId(), user.getName(), user.getRole());
+        return new DTOUser(user.getId(), user.getUsername(), user.getRole());
     }
 
 }

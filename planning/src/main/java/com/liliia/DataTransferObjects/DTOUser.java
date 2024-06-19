@@ -2,7 +2,7 @@ package com.liliia.DataTransferObjects;
 
 public class DTOUser {
     private long id_user;
-    private String username;
+    private static String username;
     private String role;
 
     public DTOUser(long id, String name, String role) {
@@ -15,7 +15,7 @@ public class DTOUser {
         return id_user;
     }
 
-    public String getName() {
+    public static String getUsername() {
         return username;
     }
 
@@ -27,7 +27,7 @@ public class DTOUser {
         this.id_user = id;
     }
 
-    public void setName(String name) {
+    public void setUsername(String name) {
         this.username = name;
     }
 

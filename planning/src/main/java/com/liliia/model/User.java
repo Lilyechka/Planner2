@@ -29,8 +29,6 @@ public class User {
     @Column(nullable = false)
     private LocalDate date_of_birth;
 
-    @Column(nullable = false)
-    private LocalDateTime date_of_registration;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,14 +44,13 @@ public class User {
         this.role = role;
         this.email = email;
         this.date_of_birth = date_of_birth;
-        this.date_of_registration = LocalDateTime.now();
     }
 
     public long getId() {
         return id_user;
     }
 
-    public String getName() {
+    public String getUsername() {
         return username;
     }
 
@@ -73,9 +70,7 @@ public class User {
         return date_of_birth;
     }
 
-    public LocalDateTime getDate_of_registration() {
-        return date_of_registration;
-    }
+
 
     public void setId(Integer id) {
         this.id_user = id;
@@ -100,11 +95,6 @@ public class User {
     public void setDate_of_birth(LocalDate date_of_birth) {
         this.date_of_birth = date_of_birth;
     }
-
-    public void setDate_of_registration(LocalDateTime date_of_registration) {
-        this.date_of_registration = date_of_registration;
-    }
-
 
 
     @Override

@@ -26,7 +26,7 @@ public class Task {
     @Column(nullable = false)
     private LocalDateTime deadline;
 
-    @Column(nullable = false, length = 10000)
+    @Column(length = 10000)
     private String description_task;
 
     public Task() {

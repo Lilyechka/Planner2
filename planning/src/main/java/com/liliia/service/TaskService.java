@@ -149,7 +149,7 @@ public class TaskService {
     private DTOTask convertToDTO(Task task) {
         DTOTask taskDTO = new DTOTask();
         taskDTO.setId(task.getId());
-        taskDTO.setAuthor(task.getUser().getName());
+        taskDTO.setAuthor(task.getUser().getUsername());
         taskDTO.setTopic(task.getTopic());
         taskDTO.setDate_of_creation(task.getDate_of_creation());
         taskDTO.setDeadline(task.getDeadline());

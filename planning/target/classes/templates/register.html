@@ -73,7 +73,6 @@
     <div>
         <label for="password">Password:</label>
         <input type="password" placeholder="Password" id="password" name="password" required>
-        <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
     </div>
     <div>
         <label for="email">Email:</label>
@@ -89,21 +88,6 @@
     <div class="login-link">
         <a href="/login">Already have an account? Login</a>
     </div>
-    <script>
-        $('#togglePassword').click(function() {
-            var passwordInput = $('#password');
-            var type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
-            passwordInput.attr('type', type);
-            $(this).attr('name', type === 'password' ? 'eye-off-outline' : 'eye-outline');
-        });
-
-        $('#togglePswRepeat').click(function() {
-            var passwordInput = $('#pswrepeat');
-            var type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
-            passwordInput.attr('type', type);
-            $(this).attr('name', type === 'password' ? 'eye-off-outline' : 'eye-outline');
-        });
-    </script>
 </form>
 
 
