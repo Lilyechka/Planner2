@@ -44,7 +44,7 @@ public class SecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .failureHandler(new CustomAuthenticationFailureHandler())
-                                .defaultSuccessUrl("/tasks", true)
+                                .defaultSuccessUrl("/api/tasks", true)
                                 .permitAll()
                 )
                 .logout(logout -> logout.permitAll());

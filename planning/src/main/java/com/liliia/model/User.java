@@ -14,19 +14,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_user;
 
-    @Column(/*nullable = false, */unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(/*nullable = false*/)
+    @Column(nullable = false)
     private String role;
 
-    @Column(/*nullable = false*/)
+    @Column(nullable = false)
     private String password;
 
-    @Column( /*nullable = false,*/ unique = true)
+    @Column( nullable = false, unique = true)
     private String email;
 
-    @Column(/*nullable = false*/)
+    @Column(nullable = false)
     private LocalDate date_of_birth;
 
     @Column(nullable = false)
@@ -73,6 +73,10 @@ public class User {
         return date_of_birth;
     }
 
+    public LocalDateTime getDate_of_registration() {
+        return date_of_registration;
+    }
+
     public void setId(Integer id) {
         this.id_user = id;
     }
@@ -96,6 +100,11 @@ public class User {
     public void setDate_of_birth(LocalDate date_of_birth) {
         this.date_of_birth = date_of_birth;
     }
+
+    public void setDate_of_registration(LocalDateTime date_of_registration) {
+        this.date_of_registration = date_of_registration;
+    }
+
 
 
     @Override

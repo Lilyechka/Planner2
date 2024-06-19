@@ -231,7 +231,7 @@
     }
 
     function editTask(taskId) {
-        $.get(`/main/tasks/${taskId}`, function(task) {
+        $.get(`/api/tasks/${taskId}`, function(task) {
             $("#formTitle").text("Edit Task");
             $("#taskId").val(task.id);
             $("#topic").val(task.topic);
@@ -244,7 +244,7 @@
     function deleteTask(taskId) {
         $.ajax({
             type: 'DELETE',
-            url: `/tasks/${taskId}`,
+            url: `/api/tasks/${taskId}`,
             success: function(response) {
                 loadTasks();
             },
