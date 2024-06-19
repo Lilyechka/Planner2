@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tasks</title>
+    <style>
+        body {
+            font-family: "Times New Roman", sans-serif;
+            background-color: #83a958;
+            color: #045654;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        div {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #add285;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            border: 1px solid #427322;
+            margin-top: auto;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #427322;
+            text-align: left;
+        }
+        th {
+            background-color: #add285;
+            color: #045654;
+        }
+        td {
+            background-color: #f2f2f2;
+        }
+        a {
+            color: #045654;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        button {
+            font-family: "Times New Roman";
+            background-color: #add285;
+            color: #427322;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        button:hover {
+            background-color: #83a958;
+        }
+        nav {
+            background-color: #83a958;
+            padding: 10px;
+        }
+        .navbar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .navbar li {
+            margin: 0 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(4, 86, 40, 0.5);
+            padding-top: 60px;
+            border-radius: 5px;
+        }
+        .modal-content {
+            font-family: "Times New Roman";
+            background-color: rgb(141, 181, 121);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+        .close {
+            color: #ffffff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>Tasks</h1>
+<div th:action="@{/tasks}" method="get" id="taskList"></div>
+<button onclick="showTaskForm()">Create New Task</button>
+
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="hideTaskForm()">&times;</span>
+        <h2 id="formTitle">Create Task</h2>
+        <form id="taskFormDetails">
+            <input type="hidden" id="taskId">
+            <div>
+                <label for="topic">Topic:</label>
+                <input type="text" id="topic" name="topic" required>
+            </div>
+            <div>
+                <label for="deadline">Deadline:</label>
+                <input type="datetime-local" id="deadline" name="deadline" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div>
+                <button type="submit">Save</button>
+                <button type="button" onclick="hideTaskForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Deadline</th>
+        <th>Date of create</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.id}"></td>
+        <td th:text="${task.title}"></td>
+        <td th:text="${task.description}"></td>
+        <td th:text="${#dates.format(task.deadline, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#dates.format(task.date_of_create, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+            <form th:action="@{|/tasks/edit/${task.id}|}" method="put" style="display:inline;">
+                <button th:href="showTaskForm()">Edit</button>
+            </form>
+            <form th:action="@{|/tasks/delete/${task.id}|}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        loadTasks();
+
+        $("#taskFormDetails").submit(function(event) {
+            event.preventDefault();
+            let taskId = $("#taskId").val();
+            let url = taskId ? `/tasks/${taskId}` : '/tasks';
+            let method = taskId ? 'PUT' : 'POST';
+
+            $.ajax({
+                type: method,
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    topic: $("#topic").val(),
+                    deadline: $("#deadline").val(),
+                    description: $("#description").val()
+                }),
+                success: function(response) {
+                    loadTasks();
+                    hideTaskForm();
+                },
+            });
+        });
+    });
+
+    function loadTasks() {
+        $.get("/main/tasks", function(data) {
+            let taskList = "";
+            $.each(data, function(index, task) {
+                taskList += `<div>
+                <h3>${task.topic}</h3>
+                <p>Deadline: ${task.deadline}</p>
+                <p>${task.description}</p>
+                <button onclick="editTask(${task.id})">Edit</button>
+                <button onclick="deleteTask(${task.id})">Delete</button>
+            </div>`;
+            });
+            $("#taskList").html(taskList);
+        });
+    }
+
+    function showTaskForm() {
+        $("#formTitle").text("Create Task");
+        $("#taskId").val("");
+        $("#topic").val("");
+        $("#deadline").val("");
+        $("#description").val("");
+        $("#taskModal").show();
+    }
+
+    function hideTaskForm() {
+        $("#taskModal").hide();
+    }
+
+    function editTask(taskId) {
+        $.get(`/main/tasks/${taskId}`, function(task) {
+            $("#formTitle").text("Edit Task");
+            $("#taskId").val(task.id);
+            $("#topic").val(task.topic);
+            $("#deadline").val(task.deadline);
+            $("#description").val(task.description);
+            $("#taskModal").show();
+        });
+    }
+
+    function deleteTask(taskId) {
+        $.ajax({
+            type: 'DELETE',
+            url: `/tasks/${taskId}`,
+            success: function(response) {
+                loadTasks();
+            },
+        });
+    }
+</script>
+</body>
+</html>
