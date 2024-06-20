@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tasks</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: "Times New Roman", sans-serif;
+            background-color: #83a958;
+            color: #045654;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        div {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #add285;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            border: 1px solid #427322;
+            margin-top: auto;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #427322;
+            text-align: left;
+        }
+        th {
+            background-color: #add285;
+            color: #045654;
+        }
+        td {
+            background-color: #f2f2f2;
+        }
+        button {
+            font-family: "Times New Roman";
+            background-color: #add285;
+            color: #427322;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        button:hover {
+            background-color: #83a958;
+        }
+        nav {
+            background-color: #83a958;
+            padding: 10px;
+        }
+        .navbar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .navbar li {
+            margin: 0 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(4, 86, 40, 0.5);
+            padding-top: 60px;
+            border-radius: 5px;
+        }
+        .modal-content {
+            font-family: "Times New Roman";
+            background-color: rgb(141, 181, 121);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+        .close {
+            color: #ffffff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>Tasks</h1>
+<div th:action="@{/task}" method="get" id="taskList"></div>
+<button onclick="showTaskForm()">Create New Task</button>
+
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="hideTaskForm()">&times;</span>
+        <h2 id="formTitle">Create Task</h2>
+        <form id="taskFormDetails">
+            <input type="hidden" id="taskId">
+            <div>
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div>
+                <label for="topic">Topic:</label>
+                <input type="text" id="topic" name="topic" required>
+            </div>
+            <div>
+                <label for="deadline">Deadline:</label>
+                <input type="datetime-local" id="deadline" name="deadline" required>
+            </div>
+            <div>
+                <label for="description_task">Description:</label>
+                <textarea id="description_task" name="description_task" required></textarea>
+            </div>
+            <div>
+                <button type="submit">Save</button>
+                <button type="button" onclick="hideTaskForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table id="Table" class="show">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Author</th>
+        <th>Topic</th>
+        <th>Deadline</th>
+        <th>Description</th>
+        <th>Date of Create</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function() {
+        var table = $('#Table').DataTable({
+            "ajax": {
+                "url": "/api/tasks",
+                "dataSrc": ""
+            },
+            "columns": [
+                { "data": "id" },
+                { "data": "author" },
+                { "data": "topic" },
+                { "data": "deadline" },
+                { "data": "description_task" },
+                { "data": "date_of_creation" },
+                {
+                    "data": null,
+                    "render": function (data, type, row) {
+                        return '<button class="delete-button" data-id="' + row.id + '">Delete</button>' +
+                            '<button class="edit-button" data-id="' + row.id + '" data-author="' + row.author + '" data-topic="' + row.topic + '" data-deadline="' + row.deadline + '" data-description_task="' + row.description_task + '" data-date_of_creation="' + row.date_of_creation + '">Edit</button>';
+                    }
+                }
+            ]
+        });
+
+        $('#Table').on('click', '.delete-button', function () {
+            var taskId = $(this).data('id');
+            deleteTask(taskId);
+        });
+
+        $('#Table').on('click', '.edit-button', function () {
+            var taskId = $(this).data('id');
+            var author = $(this).data('author');
+            var topic = $(this).data('topic');
+            var deadline = $(this).data('deadline');
+            var description_task = $(this).data('description_task');
+            var date_of_creation = $(this).data('date_of_creation');
+            showTaskForm(taskId, author, topic, deadline, description_task, date_of_creation);
+        });
+
+        $('#taskFormDetails').submit(function(event) {
+            event.preventDefault();
+            saveTask();
+        });
+    });
+
+    function showTaskForm(taskId, author, topic, deadline, description_task, date_of_creation) {
+        if (taskId) {
+            $('#taskId').val(taskId);
+            $('#author').val(author);
+            $('#topic').val(topic);
+            $('#deadline').val(deadline);
+            $('#description_task').val(description_task);
+            $('#formTitle').text('Edit Task');
+        } else {
+            $('#taskId').val('');
+            $('#author').val('');
+            $('#topic').val('');
+            $('#deadline').val('');
+            $('#description_task').val('');
+            $('#formTitle').text('Create Task');
+        }
+        document.getElementById('taskModal').style.display = 'block';
+    }
+
+    function hideTaskForm() {
+        document.getElementById('taskModal').style.display = 'none';
+    }
+
+    function saveTask() {
+        var taskId = $('#taskId').val();
+        var author = $('#author').val();
+        var topic = $('#topic').val();
+        var deadline = $('#deadline').val();
+        var description_task = $('#description_task').val();
+
+        var task = {
+            author: author,
+            topic: topic,
+            deadline: deadline,
+            description_task: description_task
+        };
+
+        if (taskId) {
+            $.ajax({
+                url: '/api/tasks/' + taskId,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(task),
+                success: function() {
+                    $('#Table').DataTable().ajax.reload();
+                    hideTaskForm();
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/api/tasks',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(task),
+                success: function() {
+                    $('#Table').DataTable().ajax.reload();
+                    hideTaskForm();
+                }
+            });
+        }
+    }
+
+    function deleteTask(taskId) {
+        $.ajax({
+            url: '/api/tasks/' + taskId,
+            type: 'DELETE',
+            success: function() {
+                $('#Table').DataTable().ajax.reload();
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>
